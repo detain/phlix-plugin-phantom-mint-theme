@@ -12,4 +12,3 @@ parameters:
         - vendor
     treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: false
-    languageVersion: 8.3

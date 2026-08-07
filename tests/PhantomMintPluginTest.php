@@ -34,7 +34,7 @@ final class PhantomMintPluginTest extends TestCase
 
         $this->assertIsString($slug);
         $this->assertSame('phantom-mint', $slug);
-        $this->assertMatchesRegularExpression('/^[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9])?$/z', $slug);
+        $this->assertMatchesRegularExpression('/^[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9])?\z/', $slug);
     }
 
     public function testProvidedThemesReturnsArray(): void

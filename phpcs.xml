@@ -9,7 +9,5 @@
     <file>tests</file>
     <file>dev-stubs</file>
 
-    <ruleset ref="PSR12">
-        <exclude name="PSR12.Files.FileHeader"/>
-    </ruleset>
+    <rule ref="PSR12"/>
 </ruleset>
