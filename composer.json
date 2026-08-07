@@ -20,7 +20,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Phlix\\PhantomMint\\": ["src/", "dev-stubs/"]
+            "Phlix\\PhantomMint\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",
