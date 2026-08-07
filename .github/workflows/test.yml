@@ -1,0 +1,91 @@
+name: CI
+
+on:
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
+
+jobs:
+    test:
+        name: PHPUnit Tests (PHP ${{ matrix.php }})
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php: ['8.3', '8.4']
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: mbstring, xml, gd
+                  coverage: xdebug
+
+            - name: Install Composer dependencies
+              run: composer install --no-progress --prefer-dist
+
+            - name: Run PHPUnit
+              run: ./vendor/bin/phpunit --colors=always
+
+    phpstan:
+        name: PHPStan Static Analysis
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: mbstring, xml, gd
+
+            - name: Install Composer dependencies
+              run: composer install --no-progress --prefer-dist
+
+            - name: Run PHPStan
+              run: ./vendor/bin/phpstan analyse --no-progress
+
+    phpcs:
+        name: PHPCS Code Style
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: mbstring, xml, gd
+
+            - name: Install Composer dependencies
+              run: composer install --no-progress --prefer-dist
+
+            - name: Run PHPCS
+              run: ./vendor/bin/phpcs
+
+    codacy:
+        name: Codacy Code Quality
+        needs: [test, phpstan, phpcs]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.4'
+                  extensions: mbstring, xml, gd
+
+            - name: Install Composer dependencies
+              run: composer install --no-progress --prefer-dist
+
+            - name: Run Codacy CLI
+              uses: codacy/codacy-analysis-cli-action@v4
+              with:
+                  project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+                  verbose: true
+                  format: json
+                  output: codacy.json
+                  check.assertions: true
