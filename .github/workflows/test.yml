@@ -84,7 +84,7 @@ jobs:
             - name: Run Codacy CLI
               uses: codacy/codacy-analysis-cli-action@v4
               with:
-                  project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+                  project-token: ${{ secrets.CODACY_API_TOKEN }}
                   verbose: true
                   format: json
                   output: codacy.json
