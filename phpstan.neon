@@ -7,7 +7,6 @@ parameters:
         - dev-stubs
     paths:
         - src
-        - tests
     excludePaths:
         - vendor
     treatPhpDocTypesAsCertain: false
