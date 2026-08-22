@@ -28,6 +28,3 @@ Thumbs.db
 
 # CI artifacts
 codacy.json
-
-# Test artifacts
-tests/bootstrap.php
