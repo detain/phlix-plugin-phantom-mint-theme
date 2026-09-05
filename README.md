@@ -82,7 +82,7 @@ composer install
 ### Code Quality
 
 ```bash
-# Static analysis with PHPStan
+# Static analysis with PHPStan (scoped to src/, dev-stubs/ scanned for host interfaces)
 ./vendor/bin/phpstan analyse
 
 # Coding standards with PHPCS
@@ -116,12 +116,13 @@ phlix-plugin-phantom-mint-theme/
 │   ├── LifecycleInterface.php     # Host interface stub
 │   └── ThemeSourceInterface.php   # Host interface stub
 ├── tests/
-│   ├── bootstrap.php               # Test bootstrap
+│   ├── bootstrap.php               # Test bootstrap (loads dev-stubs when host absent)
 │   └── PhantomMintPluginTest.php   # Plugin tests
 ├── .github/
 │   └── workflows/
 │       └── test.yml                # CI workflow
 ├── composer.json                  # Package definition
+├── composer.lock                  # Locked dependency versions
 ├── plugin.json                    # Plugin manifest
 ├── phpunit.xml                    # PHPUnit config
 ├── phpstan.neon                   # PHPStan config
