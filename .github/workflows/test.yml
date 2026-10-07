@@ -89,3 +89,46 @@ jobs:
                   format: json
                   output: codacy.json
                   check.assertions: true
+
+    # S440 (finishing S246) — this repository had NO security audit gate: no
+    # script, no CI leg. Its composer.lock predated the 2026-10-03 theme batch
+    # of this same port, which is how the 2026-10-07 guard-coverage census
+    # found it as the one theme with neither gate nor guard — this
+    # owner-ratified parity port closes that gap, gate and guard landing
+    # together. On 2026-08-06 a HIGH advisory (CVE-2026-67434, OS command
+    # injection, GHSA-hmqg-cxww-wqhq) landed against squizlabs/php_codesniffer
+    # — which this plugin pins in require-dev — and nothing here would ever
+    # have said so. The sibling repos that DID have a gate ran
+    # `composer audit --no-dev`, which drops every development dependency from
+    # the audited set and so could not fail on it either.
+    #
+    # This job audits the WHOLE lock — runtime and development — and prints
+    # the corpus it examined. Read scripts/security-audit-check.php for the
+    # policy and its reasoning.
+    #
+    # Do NOT add a development-dependency exclusion, do NOT add
+    # continue-on-error to the step below, and do NOT wrap it in a
+    # conditional: this repository ships the guard test
+    # tests/SecurityAuditCheckTest.php — it parses this workflow and the gate
+    # script and fails on each of those edits.
+    #
+    # Keep this job LAST in the file — the guard test slices the workflow from
+    # `composer-audit:` to the end and asserts the slice is not neutered.
+    composer-audit:
+        name: Security Audit
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.3'
+                  extensions: mbstring, xml, gd
+                  tools: composer:v2
+
+            # `--locked` audits composer.lock and needs no vendor/, so there
+            # is deliberately no `composer install` step here.
+            - name: Run Security Audit (runtime AND development dependencies)
+              run: php scripts/security-audit-check.php
