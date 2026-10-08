@@ -9,15 +9,15 @@ on:
 jobs:
     test:
         name: PHPUnit Tests (PHP ${{ matrix.php }})
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
         strategy:
             matrix:
                 php: ['8.3', '8.4']
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v2
+              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
               with:
                   php-version: ${{ matrix.php }}
                   extensions: mbstring, xml, gd
@@ -31,12 +31,12 @@ jobs:
 
     phpstan:
         name: PHPStan Static Analysis
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v2
+              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
               with:
                   php-version: '8.4'
                   extensions: mbstring, xml, gd
@@ -49,12 +49,12 @@ jobs:
 
     phpcs:
         name: PHPCS Code Style
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v2
+              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
               with:
                   php-version: '8.4'
                   extensions: mbstring, xml, gd
@@ -68,12 +68,12 @@ jobs:
     codacy:
         name: Codacy Code Quality
         needs: [test, phpstan, phpcs]
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v2
+              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
               with:
                   php-version: '8.4'
                   extensions: mbstring, xml, gd
@@ -116,13 +116,13 @@ jobs:
     # `composer-audit:` to the end and asserts the slice is not neutered.
     composer-audit:
         name: Security Audit
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v2
+              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
               with:
                   php-version: '8.3'
                   extensions: mbstring, xml, gd
