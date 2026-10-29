@@ -44,7 +44,7 @@ final class PhantomMintPlugin implements LifecycleInterface, ThemeSourceInterfac
                     '--accent-active'      => '#00c289',
                     '--accent-soft'        => 'rgba(0, 229, 160, 0.12)',
                     '--accent-ring'        => 'rgba(0, 229, 160, 0.45)',
-                    '--accent-text'        => '#001a12',
+                    '--accent-text'        => '#00e5a0',
                     '--bg'                 => '#03080a',
                     '--surface'            => '#081113',
                     '--surface-2'          => '#0f1a1d',
