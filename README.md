@@ -94,11 +94,14 @@ composer install
 
 ### CI Pipeline
 
-The theme includes GitHub Actions workflows for:
-- PHPUnit tests on PHP 8.3 and 8.4
+The single GitHub Actions workflow (`.github/workflows/test.yml`) runs:
+- PHPUnit tests on PHP 8.3 and 8.4, with coverage (pcov → Codacy)
 - PHPStan static analysis at level 9
 - PHPCS code style checking
-- Codacy code quality analysis
+- Security Audit (`composer-audit`): the whole committed lock — runtime *and*
+  development dependencies — checked against the Packagist advisory corpus by
+  `scripts/security-audit-check.php`, pinned by its guard test
+  `tests/SecurityAuditCheckTest.php`
 
 ## Theme Rules
 

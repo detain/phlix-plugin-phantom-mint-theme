@@ -17,14 +17,20 @@
          colors="true"
 >
     <testsuites>
-        <testsuite name="default">
-            <directory>tests</directory>
+        <testsuite name="unit">
+            <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>
 
     <source>
         <include>
-            <directory>src</directory>
+            <directory suffix=".php">src</directory>
         </include>
     </source>
+
+    <coverage>
+        <report>
+            <cobertura outputFile="coverage.xml"/>
+        </report>
+    </coverage>
 </phpunit>

@@ -1,134 +1,90 @@
-name: CI
+name: tests
 
 on:
-    push:
-        branches: [main, master]
-    pull_request:
-        branches: [main, master]
+  push:
+    branches: [master, main]
+  pull_request:
 
 jobs:
-    test:
-        name: PHPUnit Tests (PHP ${{ matrix.php }})
-        runs-on: ubuntu-26.04
-        strategy:
-            matrix:
-                php: ['8.3', '8.4']
-        steps:
-            - uses: actions/checkout@v6
+  phpunit:
+    runs-on: ubuntu-26.04
+    strategy:
+      matrix:
+        php: ['8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v6
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
-              with:
-                  php-version: ${{ matrix.php }}
-                  extensions: mbstring, xml, gd
-                  coverage: xdebug
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60 # 2.40.0
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: pcov
+          tools: composer:v2
 
-            - name: Install Composer dependencies
-              run: composer install --no-progress --prefer-dist
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
 
-            - name: Run PHPUnit
-              run: ./vendor/bin/phpunit --colors=always
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit --colors=always
 
-    phpstan:
-        name: PHPStan Static Analysis
-        runs-on: ubuntu-26.04
-        steps:
-            - uses: actions/checkout@v6
+      # phpunit.xml writes a cobertura report to ./coverage.xml (pcov is enabled above).
+      # Uploaded from a single matrix leg so both PHP versions do not race on the same commit.
+      - name: Upload coverage to Codacy
+        uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
+        continue-on-error: true
+        if: matrix.php == '8.3'
+        with:
+          api-token: ${{ secrets.CODACY_API_TOKEN }}
+          coverage-reports: ./coverage.xml
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
-              with:
-                  php-version: '8.4'
-                  extensions: mbstring, xml, gd
+      # -c phpstan.neon (not `analyse src`) so scanDirectories picks up the
+      # dev-stub for the host-only Phlix\Theming\ThemeSourceInterface.
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse -c phpstan.neon --no-progress
 
-            - name: Install Composer dependencies
-              run: composer install --no-progress --prefer-dist
+      # --standard=phpcs.xml (not `phpcs src`) so tests/ and dev-stubs/ are checked too.
+      - name: Run PHPCS
+        run: vendor/bin/phpcs --standard=phpcs.xml
 
-            - name: Run PHPStan
-              run: ./vendor/bin/phpstan analyse --no-progress
+  # S440 (finishing S246) — this repository had NO security audit gate: no
+  # script, no CI leg. Its composer.lock predated the 2026-10-03 theme batch
+  # of this same port, which is how the 2026-10-07 guard-coverage census
+  # found it as the one theme with neither gate nor guard — this
+  # owner-ratified parity port closes that gap, gate and guard landing
+  # together. On 2026-08-06 a HIGH advisory (CVE-2026-67434, OS command
+  # injection, GHSA-hmqg-cxww-wqhq) landed against squizlabs/php_codesniffer
+  # — which this plugin pins in require-dev — and nothing here would ever
+  # have said so. The sibling repos that DID have a gate ran
+  # `composer audit --no-dev`, which drops every development dependency from
+  # the audited set and so could not fail on it either.
+  #
+  # This job audits the WHOLE lock — runtime and development — and prints
+  # the corpus it examined. Read scripts/security-audit-check.php for the
+  # policy and its reasoning.
+  #
+  # Do NOT add a development-dependency exclusion, do NOT add
+  # continue-on-error to the step below, and do NOT wrap it in a
+  # conditional: this repository ships the guard test
+  # tests/SecurityAuditCheckTest.php — it parses this workflow and the gate
+  # script and fails on each of those edits.
+  #
+  # Keep this job LAST in the file — the guard test slices the workflow from
+  # `composer-audit:` to the end and asserts the slice is not neutered.
+  composer-audit:
+    name: Security Audit
+    runs-on: ubuntu-26.04
 
-    phpcs:
-        name: PHPCS Code Style
-        runs-on: ubuntu-26.04
-        steps:
-            - uses: actions/checkout@v6
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
-              with:
-                  php-version: '8.4'
-                  extensions: mbstring, xml, gd
+      - name: Setup PHP
+        uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60 # 2.40.0
+        with:
+          php-version: '8.3'
+          tools: composer:v2
 
-            - name: Install Composer dependencies
-              run: composer install --no-progress --prefer-dist
-
-            - name: Run PHPCS
-              run: ./vendor/bin/phpcs
-
-    codacy:
-        name: Codacy Code Quality
-        needs: [test, phpstan, phpcs]
-        runs-on: ubuntu-26.04
-        steps:
-            - uses: actions/checkout@v6
-
-            - name: Setup PHP
-              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
-              with:
-                  php-version: '8.4'
-                  extensions: mbstring, xml, gd
-
-            - name: Install Composer dependencies
-              run: composer install --no-progress --prefer-dist
-
-            - name: Run Codacy CLI
-              uses: codacy/codacy-analysis-cli-action@v4
-              with:
-                  project-token: ${{ secrets.CODACY_API_TOKEN }}
-                  verbose: true
-                  format: json
-                  output: codacy.json
-                  check.assertions: true
-
-    # S440 (finishing S246) — this repository had NO security audit gate: no
-    # script, no CI leg. Its composer.lock predated the 2026-10-03 theme batch
-    # of this same port, which is how the 2026-10-07 guard-coverage census
-    # found it as the one theme with neither gate nor guard — this
-    # owner-ratified parity port closes that gap, gate and guard landing
-    # together. On 2026-08-06 a HIGH advisory (CVE-2026-67434, OS command
-    # injection, GHSA-hmqg-cxww-wqhq) landed against squizlabs/php_codesniffer
-    # — which this plugin pins in require-dev — and nothing here would ever
-    # have said so. The sibling repos that DID have a gate ran
-    # `composer audit --no-dev`, which drops every development dependency from
-    # the audited set and so could not fail on it either.
-    #
-    # This job audits the WHOLE lock — runtime and development — and prints
-    # the corpus it examined. Read scripts/security-audit-check.php for the
-    # policy and its reasoning.
-    #
-    # Do NOT add a development-dependency exclusion, do NOT add
-    # continue-on-error to the step below, and do NOT wrap it in a
-    # conditional: this repository ships the guard test
-    # tests/SecurityAuditCheckTest.php — it parses this workflow and the gate
-    # script and fails on each of those edits.
-    #
-    # Keep this job LAST in the file — the guard test slices the workflow from
-    # `composer-audit:` to the end and asserts the slice is not neutered.
-    composer-audit:
-        name: Security Audit
-        runs-on: ubuntu-26.04
-
-        steps:
-            - uses: actions/checkout@v6
-
-            - name: Setup PHP
-              uses: shivammathur/setup-php@4424c9aab975b57bd706ee5a39c6b4334d6e4f60
-              with:
-                  php-version: '8.3'
-                  extensions: mbstring, xml, gd
-                  tools: composer:v2
-
-            # `--locked` audits composer.lock and needs no vendor/, so there
-            # is deliberately no `composer install` step here.
-            - name: Run Security Audit (runtime AND development dependencies)
-              run: php scripts/security-audit-check.php
+      # `--locked` audits composer.lock and needs no vendor/, so there is
+      # deliberately no `composer install` step here.
+      - name: Run Security Audit (runtime AND development dependencies)
+        run: php scripts/security-audit-check.php
