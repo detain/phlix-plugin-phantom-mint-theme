@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Phlix\PhantomMint;
+namespace Phlix\PhantomMint\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Phlix\PhantomMint\PhantomMintPlugin;
 use Phlix\Shared\Plugin\LifecycleInterface;
 use Phlix\Theming\ThemeSourceInterface;
 use Psr\Container\ContainerInterface;
