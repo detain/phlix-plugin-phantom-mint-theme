@@ -52,17 +52,49 @@ Phantom Mint features a dark, aquatic aesthetic with teal-mint accent colors tha
 
 ## Installation
 
-### Via Composer
+### The supported route: the plugin catalog
+
+The Phlix server installs plugins from a **catalog** (`plugins.json`). A catalog
+entry pins an exact commit (`ref`) and the sha256 of that commit's tarball
+(`artifactSha256`), and the server verifies those bytes before it extracts
+anything. Without a pin, `PluginLoader::install()` refuses outright — that is a
+deliberate default-deny, not a bug to work around.
+
+**Admin UI** — *Admin → Plugins* (`/app/admin/plugins`), find **Phantom Mint
+Theme**, press **Install**, then flip its switch to **enable** it.
+
+**CLI** — from the server root, pass the **repository URL**, not the plugin
+name (the URL is what gets rewritten to the pinned tarball):
 
 ```bash
-composer require detain/phlix-plugin-phantom-mint-theme
+php bin/phlix plugin:install https://github.com/detain/phlix-plugin-phantom-mint-theme
+php bin/phlix plugin:enable  phlix-plugin-phantom-mint-theme
 ```
 
-### Manual Installation
+While iterating on a local fork (no catalog entry yet), build an archive and
+install it over `file://`, which is exempt from the pin requirement because the
+bytes are already yours:
 
-1. Clone this repository into your Phlix plugins directory
-2. Run `composer install` to install dependencies
-3. Enable the theme in your Phlix admin panel
+```bash
+tar --exclude=vendor --exclude=.git -czf /tmp/phantom-mint.tar.gz phlix-plugin-phantom-mint-theme/
+php bin/phlix plugin:install file:///tmp/phantom-mint.tar.gz
+php bin/phlix plugin:enable  phlix-plugin-phantom-mint-theme
+```
+
+### What does **not** work
+
+`composer require detain/phlix-plugin-phantom-mint-theme` into the server, or
+cloning this repository into the plugins directory, does not register anything —
+the plugin loader installs catalog-pinned archives or local tarballs, never an
+ambient vendor checkout or a bare directory.
+
+### Install, enable, and selection are three different acts
+
+Installing downloads and stages the plugin. **Enabling** it is what registers
+the theme: `PluginLoader::enable()` finds the `ThemeSourceInterface` on the
+entry class and contributes the `phantom-mint` theme id. Choosing the theme is
+a **per-user preference**, not an admin action — each user picks *Phantom Mint*
+under **Settings → Appearance**. None of the three steps implies the next.
 
 ## Requirements
 
@@ -120,7 +152,11 @@ phlix-plugin-phantom-mint-theme/
 │   └── ThemeSourceInterface.php   # Host interface stub
 ├── tests/
 │   ├── bootstrap.php               # Test bootstrap (loads dev-stubs when host absent)
-│   └── PhantomMintPluginTest.php   # Plugin tests
+│   ├── PhantomMintPluginTest.php   # Plugin tests
+│   ├── SecurityAuditCheckTest.php  # S440 anti-neutering guard for the audit gate
+│   └── TokenContrastTest.php       # WCAG contrast contract law for the palette
+├── scripts/
+│   └── security-audit-check.php    # Whole-lock audit gate (CI `composer-audit`)
 ├── .github/
 │   └── workflows/
 │       └── test.yml                # CI workflow
