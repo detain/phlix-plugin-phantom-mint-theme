@@ -109,14 +109,14 @@ final class PhantomMintPluginTest extends TestCase
     {
         $container = $this->createMock(ContainerInterface::class);
 
+        $this->expectNotToPerformAssertions();
         $this->plugin->onEnable($container);
-        $this->assertTrue(true);
     }
 
     public function testOnDisableDoesNotThrow(): void
     {
+        $this->expectNotToPerformAssertions();
         $this->plugin->onDisable();
-        $this->assertTrue(true);
     }
 
     public function testSubscribedEventsReturnsEmptyArray(): void
