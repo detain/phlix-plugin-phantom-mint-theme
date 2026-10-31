@@ -1,13 +1,23 @@
-includes:
-    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
-
 parameters:
     level: 9
     scanDirectories:
+        # dev-stubs are INDEXED here (deliberately included) so the host
+        # contracts resolve when src/ and scripts/ are analyzed; see the
+        # stub headers.
         - dev-stubs
     paths:
         - src
+        # The S440 gate script ships fully typed; level-9-clean was measured
+        # (W-min143 item 05) with zero ignores, so the auditor can no longer
+        # rot unchecked. bright-line: the script itself stays byte-frozen.
+        - scripts
     excludePaths:
         - vendor
-    treatPhpDocTypesAsCertain: false
-    reportUnmatchedIgnoredErrors: false
+        - tests
+    # W-min143 item 05: the bleedingEdge include and the
+    # treatPhpDocTypesAsCertain:false softener that used to sit here were
+    # measured away — the full corpus is clean at plain level 9 without
+    # either. reportUnmatchedIgnoredErrors is stated explicitly (true): any
+    # future ignore must pay for itself or it reddens the build instead of
+    # silently widening.
+    reportUnmatchedIgnoredErrors: true

@@ -137,7 +137,8 @@ composer install
 ### Code Quality
 
 ```bash
-# Static analysis with PHPStan (scoped to src/, dev-stubs/ scanned for host interfaces)
+# Static analysis with PHPStan (level 9 over src/ and scripts/; dev-stubs/
+# scanned for the host interfaces, zero ignores)
 ./vendor/bin/phpstan analyse
 
 # Coding standards with PHPCS
