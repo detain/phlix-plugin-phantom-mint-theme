@@ -143,6 +143,23 @@ final class PhantomMintPlugin implements LifecycleInterface, ThemeSourceInterfac
                     '--vignette'           => 'rgba(0, 20, 15, 0.7)',
                     '--ambient'            => 'rgba(0, 229, 160, 0.18)',
 
+                    // STATUS family — DELIBERATELY OMITTED (0/8): --error,
+                    // --error-bg, --success, --success-bg, --warning,
+                    // --warning-bg, --info and --info-bg inherit midnight's
+                    // warm set through the `extends` chain. KNOWN LIMITATION
+                    // (measured WCAG ratios): the inherited foregrounds stay
+                    // AA-safe on this palette's darkest ground (--success
+                    // 8.91:1, --warning 9.34:1, --info 7.75:1, --error
+                    // 6.14:1 on --bg), but beside the mint accent they read
+                    // as same-family variants — success vs accent 1.37:1,
+                    // warning 1.31, info 1.57, error 1.98 — so save/confirm
+                    // chips can look "slightly off accent" at TV distance.
+                    // Retinting the status family (and its matching
+                    // --color-* status aliases) is an owner-gated value
+                    // decision for the whole theme family; see
+                    // theme-phantom-mint__webux.md MINOR-4. Do not silently
+                    // re-tune it here.
+
                     // Legacy `--color-*` aliases — only the ones the shipped SPA
                     // still reads (PhotoView/Albums pages, admin WebhookLogs).
                     // Each duplicates its modern twin above ON PURPOSE: raise
