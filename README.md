@@ -17,38 +17,56 @@ Phantom Mint features a dark, aquatic aesthetic with teal-mint accent colors tha
 
 ## Color Palette
 
+Every row below is keyed by the CSS custom property it documents, so the table
+can be diffed directly against the served token payload from `providedThemes()`.
+
 ### Accent Colors
-- **Primary Accent**: `#00e5a0` — Vibrant mint green
-- **Accent Hover**: `#33ebb3` — Lighter mint on hover
-- **Accent Active**: `#00c289` — Deeper mint when pressed
-- **Accent Soft**: `rgba(0, 229, 160, 0.12)` — Subtle mint backgrounds
-- **Accent Ring**: `rgba(0, 229, 160, 0.55)` — Focus ring color
-- **Accent Text**: `#00e5a0` — the accent mint AS foreground text/icon, AA (≥4.5:1) on dark surfaces (wordmark dot, avatar initials, selected-state text)
+
+| Token | Value | Description |
+|-------|-------|-------------|
+| `--accent` | `#00e5a0` | Primary accent — vibrant mint green |
+| `--accent-hover` | `#33ebb3` | Lighter mint on hover |
+| `--accent-active` | `#00c289` | Deeper mint when pressed |
+| `--accent-soft` | `rgba(0, 229, 160, 0.12)` | Subtle mint backgrounds |
+| `--accent-ring` | `rgba(0, 229, 160, 0.55)` | Focus ring color |
+| `--accent-text` | `#00e5a0` | The accent mint AS foreground text/icon, AA (≥4.5:1) on dark surfaces (wordmark dot, avatar initials, selected-state text) |
 
 ### Background & Surface
-- **Background**: `#03080a` — Near-black with green undertone
-- **Surface**: `#081113` — Elevated surface color
-- **Surface 2**: `#0f1a1d` — Higher elevation
-- **Surface 3**: `#162325` — Highest elevation
-- **Surface Glass**: `rgba(8, 17, 19, 0.65)` — Glass panel overlay
-- **Surface Glass Strong**: `rgba(3, 8, 10, 0.88)` — Strong glass effect
+
+| Token | Value | Description |
+|-------|-------|-------------|
+| `--bg` | `#03080a` | Page background — near-black with green undertone |
+| `--surface` | `#081113` | Elevated surface color |
+| `--surface-2` | `#0f1a1d` | Higher elevation |
+| `--surface-3` | `#162325` | Highest elevation |
+| `--surface-glass` | `rgba(8, 17, 19, 0.65)` | Glass panel overlay |
+| `--surface-glass-strong` | `rgba(3, 8, 10, 0.88)` | Strong glass effect |
 
 ### Text Colors
-- **Primary Text**: `#e8f4f0` — High contrast mint-tinted white
-- **Muted Text**: `#8fa8a4` — Secondary text
-- **Subtle Text**: `#77928c` — Tertiary text
-- **Faint Text**: `#374a47` — Disabled/hint text
-- **On Accent**: `#001a12` — dark ink painted on accent-filled surfaces (`--text-on-accent`; a different role from `--accent-text`, which is mint-on-dark)
+
+| Token | Value | Description |
+|-------|-------|-------------|
+| `--text` | `#e8f4f0` | Primary text — high contrast mint-tinted white |
+| `--text-muted` | `#8fa8a4` | Secondary text |
+| `--text-subtle` | `#77928c` | Tertiary text |
+| `--text-faint` | `#374a47` | Disabled/hint text |
+| `--text-on-accent` | `#001a12` | Dark ink painted on accent-filled surfaces — a different role from `--accent-text`, which is mint-on-dark |
 
 ### Border Colors
-- **Border**: `#1a2d2b` — Default border
-- **Border Subtle**: `#0f1d1b` — Subtle dividers
-- **Border Strong**: `#2a4542` — Emphasized borders
+
+| Token | Value | Description |
+|-------|-------|-------------|
+| `--border` | `#1a2d2b` | Default border |
+| `--border-subtle` | `#0f1d1b` | Subtle dividers |
+| `--border-strong` | `#2a4542` | Emphasized borders |
 
 ### Effects
-- **Grain Opacity**: `0.03` — Subtle film grain overlay
-- **Vignette**: `rgba(0, 20, 15, 0.7)` — Edge darkening
-- **Ambient**: `rgba(0, 229, 160, 0.18)` — Ambient glow effect
+
+| Token | Value | Description |
+|-------|-------|-------------|
+| `--grain-opacity` | `0.03` | Subtle film grain overlay |
+| `--vignette` | `rgba(0, 20, 15, 0.7)` | Edge darkening |
+| `--ambient` | `rgba(0, 229, 160, 0.18)` | Ambient glow effect |
 
 ### Legacy `--color-*` aliases
 
