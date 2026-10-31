@@ -50,6 +50,29 @@ Phantom Mint features a dark, aquatic aesthetic with teal-mint accent colors tha
 - **Vignette**: `rgba(0, 20, 15, 0.7)` — Edge darkening
 - **Ambient**: `rgba(0, 229, 160, 0.18)` — Ambient glow effect
 
+### Legacy `--color-*` aliases
+
+Five tokens above are deliberately duplicated under their legacy `--color-*`
+alias names. The alias family predates the modern tokens and the shipped SPA
+still reads it — `var()` consumers live in the PhotoView/PhotoAlbum pages and
+the admin WebhookLogs page:
+
+| Alias | Value | Modern twin |
+| --- | --- | --- |
+| `--color-bg` | `#03080a` | `--bg` |
+| `--color-surface` | `#081113` | `--surface` |
+| `--color-text` | `#e8f4f0` | `--text` |
+| `--color-text-muted` | `#8fa8a4` | `--text-muted` |
+| `--color-border` | `#1a2d2b` | `--border` |
+
+These duplicates are load-bearing, not decorative: if you raise `--bg` you
+must raise `--color-bg` in the same edit, or the un-migrated components keep
+the old color underneath the new theme. The four status aliases
+(`--color-error*` and friends) are omitted on purpose — this theme overrides no
+status colors, so the aliases correctly fall through to the midnight base. The
+remaining thirteen `--color-*` names on the allowlist have no `var()`
+consumers at all; setting them would be a no-op, so they stay omitted.
+
 ## Installation
 
 ### The supported route: the plugin catalog
@@ -139,7 +162,14 @@ The single GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 
 1. **Token Keys**: All token keys must be on the Phlix theme token allowlist
 2. **Token Values**: Must be literal values — hex colors, rgb/rgba/hsl/hsla with numeric arguments, bare numbers, `transparent`, or `currentColor`
-3. **Forbidden Values**: `var()`, `url()`, `;`, `}`, `{`, `\`, newlines, tabs, and CSS comments are not allowed in token values
+3. **Forbidden Values**: a token value must be one literal, and must not
+   contain any of:
+   - a `var()` or `url()` reference,
+   - a `;`, `{`, `}`, or backslash,
+   - a newline, tab, or CSS comment.
+
+   The host parser accepts only complete literals per value, so these are
+   rejected rather than stripped — the whole payload fails to register.
 
 ## File Structure
 
