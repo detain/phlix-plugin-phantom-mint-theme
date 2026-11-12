@@ -114,10 +114,14 @@ php bin/phlix plugin:enable  phlix-plugin-phantom-mint-theme
 
 While iterating on a local fork (no catalog entry yet), build an archive and
 install it over `file://`, which is exempt from the pin requirement because the
-bytes are already yours:
+bytes are already yours. The `tar` path is relative, so run it from the
+directory that *contains* your checkout; run the `php bin/phlix` lines from the
+server root:
 
 ```bash
+cd /path/to/parent-of-checkout   # the directory holding phlix-plugin-phantom-mint-theme/
 tar --exclude=vendor --exclude=.git -czf /tmp/phantom-mint.tar.gz phlix-plugin-phantom-mint-theme/
+cd /path/to/phlix-server         # the server root
 php bin/phlix plugin:install file:///tmp/phantom-mint.tar.gz
 php bin/phlix plugin:enable  phlix-plugin-phantom-mint-theme
 ```

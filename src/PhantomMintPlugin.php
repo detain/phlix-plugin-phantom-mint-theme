@@ -32,8 +32,12 @@ use Psr\Container\ContainerInterface;
  * - Ambient mint glow (`--ambient`) echoing bioluminescence
  *
  * Every token value below is a literal the host grammar accepts — no `var()`
- * chains, no CSS constructs. The paired WCAG contract for the accent ramp is
- * pinned by `tests/TokenContrastTest.php`.
+ * chains, no CSS constructs. `tests/TokenContrastTest.php` pins the WCAG
+ * contract for a specific role set, not the whole accent ramp: `--accent-text`
+ * and `--text-subtle` as AA (>= 4.5:1) foregrounds on every ground,
+ * `--text-on-accent` as AA ink on the `--accent` fill, and the composited
+ * `--accent-ring` at the 3:1 non-text minimum under every adjacency.
+ * `--accent-hover`, `--accent-active` and `--accent-soft` carry no contrast pin.
  *
  * @package Phlix\PhantomMint
  * @since 1.0.0
@@ -68,7 +72,7 @@ final class PhantomMintPlugin implements LifecycleInterface, ThemeSourceInterfac
     /**
      * A theme plugin subscribes to no events.
      *
-     * @return array<class-string, string> Always empty.
+     * @return array<class-string, string|callable> Always empty.
      */
     public function subscribedEvents(): array
     {
@@ -124,9 +128,9 @@ final class PhantomMintPlugin implements LifecycleInterface, ThemeSourceInterfac
                     // LoginForm, SyncPlayModal). The base it extends is the same
                     // tier (midnight ships #463d33 at 1.98:1 on #000000), so
                     // lifting mint alone breaks family parity — the value move
-                    // is an owner-gated family decision; see
-                    // theme-phantom-mint__webux.md MINOR-5. Do not silently
-                    // re-tune it here.
+                    // is an owner-gated family decision, tracked in the
+                    // internal review ledger (not shipped); the measurements
+                    // above are the evidence. Do not silently re-tune it here.
                     '--text'               => '#e8f4f0',
                     '--text-muted'         => '#8fa8a4',
                     '--text-subtle'        => '#77928c',
@@ -156,9 +160,9 @@ final class PhantomMintPlugin implements LifecycleInterface, ThemeSourceInterfac
                     // chips can look "slightly off accent" at TV distance.
                     // Retinting the status family (and its matching
                     // --color-* status aliases) is an owner-gated value
-                    // decision for the whole theme family; see
-                    // theme-phantom-mint__webux.md MINOR-4. Do not silently
-                    // re-tune it here.
+                    // decision for the whole theme family, tracked in the
+                    // internal review ledger (not shipped); the ratios above
+                    // are the evidence. Do not silently re-tune it here.
 
                     // Legacy `--color-*` aliases — only the ones the shipped SPA
                     // still reads (PhotoView/Albums pages, admin WebhookLogs).
