@@ -107,7 +107,7 @@ final class PhantomMintPluginTest extends TestCase
 
     public function testOnEnableDoesNotThrow(): void
     {
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
 
         $this->expectNotToPerformAssertions();
         $this->plugin->onEnable($container);
